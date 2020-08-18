@@ -11,10 +11,13 @@ using WebApplicationSearch.Models;
 
 namespace WebApplicationSearch.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class BingController : Controller
     {
         private readonly ILogger<BingController> _logger;
         private readonly DBContext _context;
+        private const string eng = "Bing";
 
         public BingController(ILogger<BingController> logger, DBContext context)
         {
@@ -23,23 +26,19 @@ namespace WebApplicationSearch.Controllers
         }
 
         [HttpGet]
-        public async IAsyncEnumerable<Result> Get(string search = "anglersharp", int topPage = 20)
+        public async IAsyncEnumerable<Result> Get(string search = "anglersharp", int topPage = 5)
         {
 
             var config = Configuration.Default.WithDefaultLoader();
-            var document = await BrowsingContext.New(config).OpenAsync($"https://www.google.com/search?num={topPage}");
+            var document =  await BrowsingContext.New(config).OpenAsync($"https://www.bing.com/search");
             var form = document.QuerySelector<IHtmlFormElement>("form[action='/search']");
-            var result = await form.SubmitAsync(new { q = $"{search}" });
-            var t = result.QuerySelectorAll("*").Where(m => m.LocalName == "div" && m.HasAttribute("id") && m.GetAttribute("id") == "main");
-            var classname = result.QuerySelectorAll<IHtmlAnchorElement>("a")
-                .Select(x => new { x.ParentElement.ClassName }).GroupBy(x => x.ClassName)
-                .Select(x => new { key = x.Key, count = x.Count() }).OrderByDescending(x => x.count).First();
-            var links = result.QuerySelectorAll<IHtmlAnchorElement>("a").Where(x => x.ParentElement.ClassName == classname.key).Take(topPage); // CSS
-            foreach (var link in links)
+            var result =  await form.SubmitAsync(new { q = $"{search}" });
+            var resultCollection = result.QuerySelectorAll<IHtmlAnchorElement>("ol li.b_algo h2 a").Take(topPage);
+            
+            foreach (var link in resultCollection)
             {
-                var url = link.Attributes["href"].Value; // HTML DOM
                 var newResult = new Result
-                    { EnteredDate = DateTime.Now, Request = search, SearchEngine = "Google", Title = link.Text };
+                { EnteredDate = DateTime.Now, Request = search, SearchEngine = eng, Title = link.Text };
                 _context.Results.Add(newResult);
                 _context.SaveChanges();
                 yield return newResult;
