@@ -6,3 +6,35 @@ services:
     build:
       context: .
       dockerfile: WebApplicationSearch/Dockerfile
+    ports:
+      - "443:443"
+    networks:
+      search_net:
+    restart: always
+    depends_on:
+      - mssql
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    hostname: mssql
+    environment:
+      - SA_PASSWORD=P@ssw0rd
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    networks:
+      search_net:
+    healthcheck:
+      test: sqlcmd -S mssql -U SA -P 'P@ssw0rd' -Q 'Select TOP 1 name from master..sysdatabases'
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: always
+    volumes:
+      - search_data:/var/opt/mssql
+volumes:
+  search_data:
+
+networks:
+  search_net:
