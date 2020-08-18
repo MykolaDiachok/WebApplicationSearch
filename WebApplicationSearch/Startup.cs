@@ -2,10 +2,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using WebApplicationSearch.Models;
 
 namespace WebApplicationSearch
 {
@@ -31,10 +34,12 @@ namespace WebApplicationSearch
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+            services.AddDbContext<DBContext>(opt=>opt.UseSqlServer(Configuration.GetConnectionString("DBContext")));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DBContext context)
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
