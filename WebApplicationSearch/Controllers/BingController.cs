@@ -17,7 +17,7 @@ namespace WebApplicationSearch.Controllers
     {
         private readonly ILogger<BingController> _logger;
         private readonly DBContext _context;
-        private const string eng = "Bing";
+        private const string Eng = "Bing";
 
         public BingController(ILogger<BingController> logger, DBContext context)
         {
@@ -28,7 +28,7 @@ namespace WebApplicationSearch.Controllers
         [HttpGet]
         public async IAsyncEnumerable<Result> Get(string search = "anglersharp", int topPage = 5)
         {
-
+            _logger.LogInformation($"starting a search query \"{search}\" to {Eng}");
             var config = Configuration.Default.WithDefaultLoader();
             var document =  await BrowsingContext.New(config).OpenAsync($"https://www.bing.com/search");
             var form = document.QuerySelector<IHtmlFormElement>("form[action='/search']");
@@ -38,9 +38,10 @@ namespace WebApplicationSearch.Controllers
             foreach (var link in resultCollection)
             {
                 var newResult = new Result
-                { EnteredDate = DateTime.Now, Request = search, SearchEngine = eng, Title = link.Text };
-                _context.Results.Add(newResult);
-                _context.SaveChanges();
+                { EnteredDate = DateTime.Now, Request = search, SearchEngine = Eng, Title = link.Text };
+                _logger.LogInformation($"result:{newResult}");
+                await _context.Results.AddAsync(newResult);
+                await _context.SaveChangesAsync();
                 yield return newResult;
             }
         }

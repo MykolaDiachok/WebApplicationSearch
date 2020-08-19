@@ -1,13 +1,13 @@
-<h1 id="tableLabel">Search</h1>
-<label>
-  search:
-  <input type="text" [formControl]="searchString">
-  <button (click)="updateSearch()">Search</button>
-</label>
 
-<p *ngIf="!searchengs"><em>Loading...</em></p>
+<div class="center">
+  <input type="text" [formControl]="searchString" (keyup.enter)="updateSearch()">
+  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+  <button class="btn-primary" (click)="updateSearch()">Search</button>
+</div>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="searchengs">
+<p *ngIf="searchStatus>0"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="searchEngs">
   <thead>
   <tr>
     <th>SearchEngine</th>
@@ -17,11 +17,11 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let eng of searchengs">
+  <tr *ngFor="let eng of searchEngs">
     <td>{{ eng.searchEngine }}</td>
     <td>{{ eng.request }}</td>
     <td>{{ eng.title }}</td>
-    <td>{{ eng.enteredDate }}</td>
+    <td>{{ eng.enteredDate | date:'short' }}</td>
   </tr>
   </tbody>
 </table>

@@ -35,14 +35,16 @@ namespace WebApplicationSearch
                     {
                         var context = services.GetRequiredService<DBContext>();
                         DbInitializer.Initialize(context);
+                        host.Run();
                     }
                     catch (Exception ex)
                     {
                         var logger = services.GetRequiredService<ILogger<Program>>();
                         logger.LogError(ex, "An error occurred while seeding the database.");
+                        throw;
                     }
                 }
-                host.Run();
+                
                 return 0;
             }
             catch (Exception ex)

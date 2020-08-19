@@ -16,5 +16,10 @@ namespace WebApplicationSearch.Models
         public string Request { get; set; }
         public string Title { get; set; }
         public DateTime EnteredDate { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SearchEngine} {Request} {Title} {EnteredDate}";
+        }
     }
 }
