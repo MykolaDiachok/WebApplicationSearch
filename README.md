@@ -1,5 +1,6 @@
 # WebApplicationSearch
-### The approach used was code first, the database is created automatically, on the first connection  
+## The app is written in asn dotnet core 3.1 and angular 10 and prepared to run in containers.
+### The approach used was code first, mssql database is created automatically, on the first connection  
    ***If you don't use docker-compose to run the application, do not forget to correctly set the connection string for DBContext to the database in the file appsettings.json.  
 By default setting for docker.***  
 If use docker(recommended), download images before start - that will speed up application launch  
